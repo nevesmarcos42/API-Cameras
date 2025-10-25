@@ -1,0 +1,19 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log* 
+yarn-error.log*
+
+# Environment variables
+.env
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Miscellaneous
+.DS_Store
+*.pem
