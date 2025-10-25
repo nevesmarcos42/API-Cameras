@@ -1,7 +1,7 @@
 # Projeto API de Câmeras
 
 ## Visão Geral
-API RESTful construída com Node.js, Express e MongoDB (via Mongoose) para gerenciar câmeras, permitindo operações CRUD completas.
+Este projeto é uma API RESTful criada com Node.js, Express e MongoDB (via Mongoose) para gerenciar câmeras em um sistema. O foco é oferecer funcionalidades CRUD (Criar, Ler, Atualizar, Deletar) organizadas com boas práticas modernas de código.
 
 ## Funcionalidades Implementadas
 - Configuração modular da conexão MongoDB em `config/db.js`.
