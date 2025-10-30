@@ -8,8 +8,7 @@ Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir 
 
 ## Funcionalidades Implementadas
 
-- Configuração modular da conexão MongoDB em  
-  `config/db.js`.
+- Configuração modular da conexão MongoDB em `config/db.js`.
 - Endpoints REST para CRUD de câmeras:  
   - POST /api/cameras – criar nova câmera  
   - GET /api/cameras – listar todas as câmeras  
@@ -35,24 +34,23 @@ Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir 
 ## Como rodar
 
 1. Clone o repositório e instale dependências:  
- - npm install
+ - `npm install`
 
 2. Configure o arquivo `.env` com as variáveis necessárias:  
- - MONGODB_URL=<url_do_mongodb>
- - CLICKHOUSE_URL=<url_do_clickhouse>
- - CLICKHOUSE_USER=<usuario_clickhouse>
- - CLICKHOUSE_PASSWORD=<senha_clickhouse>
- - KAFKA_BROKERS=<lista_brokers_kafka>
- - KAFKA_GROUP_ID=camera-group
+ - `MONGODB_URL=<url_do_mongodb>`  
+ - `CLICKHOUSE_URL=<url_do_clickhouse>`  
+ - `CLICKHOUSE_USER=<usuario_clickhouse>`  
+ - `CLICKHOUSE_PASSWORD=<senha_clickhouse>`  
+ - `KAFKA_BROKERS=<lista_brokers_kafka>`  
+ - `KAFKA_GROUP_ID=camera-group`
 
 3. Inicie o servidor API:  
- - npm start ou nodemon app.js
+ - `npm start` ou `nodemon app.js`
 
 4. Teste a API com Postman, curl ou similar.
 
 5. Para validar a integração ClickHouse, rode o script de teste:  
- - node testInsertClickhouse.js
-
+ - `node testInsertClickhouse.js`
 
 6. Para rodar o consumidor Kafka e persistir eventos no ClickHouse, execute o serviço consumidor conforme definido no código.
 
@@ -61,10 +59,15 @@ Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir 
 A tabela `device_events` no banco `default` é configurada conforme:
 
 CREATE TABLE default.device_events (
+
 deviceId String,
+
 eventType String,
+
 timestamp DateTime
+
 ) ENGINE = MergeTree()
+
 ORDER BY timestamp;
 
 
@@ -83,4 +86,3 @@ Abra issues ou pull requests para participar do desenvolvimento.
 ---
 
 Este README será mantido e atualizado conforme o projeto evolui para garantir clareza e facilitar onboarding de novos colaboradores.
-
