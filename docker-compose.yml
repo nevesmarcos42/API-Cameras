@@ -21,12 +21,12 @@ services:
       KAFKA_KRAFT_MODE: "true"                      # Habilita modo KRaft
       KAFKA_PROCESS_ROLES: "broker,controller"      # Atua como broker e controller
       KAFKA_NODE_ID: 1                              # ID único do nó Kafka
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
+      KAFKA_CONTROLLER_QUORUM_VOTERS:  "1@kafka:9093"   # "1@localhost:9093"
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092    # PLAINTEXT://localhost:9092
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -35,17 +35,40 @@ services:
       CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"       # ID do cluster (gerar um UUID seu)
     volumes:
       - ./kafka/data:/var/lib/kafka/data           # Persistência dos logs Kafka
+    networks:
+      - kafka-network   
     restart: unless-stopped
+
+  kafka-init:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-init
+    depends_on:
+      - kafka
+    entrypoint: >
+      sh -c "
+        echo \"Esperando Kafka iniciar...\";
+        cub kafka-ready -b kafka:9092 60;
+        kafka-topics --create --topic device-events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:9092;
+        echo \"Tópico 'device-events' criado ou já existente\";
+        sleep infinity
+      "
+    networks:
+      - kafka-network
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse
+    environment:
+      - CLICKHOUSE_USER=myuser
+      - CLICKHOUSE_PASSWORD=mypassword
     ports:
       - "9000:9000"
       - "8123:8123"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
     restart: unless-stopped
+    networks:
+      - kafka-network
 
   minio:
     image: minio/minio:latest
@@ -59,9 +82,15 @@ services:
     volumes:
       - minio-data:/data
     restart: unless-stopped
+    networks:
+      - kafka-network
 
 volumes:
   mongo-data:
   clickhouse-data:
   kafka-data:
   minio-data:
+
+networks:
+  kafka-network:
+    driver: bridge

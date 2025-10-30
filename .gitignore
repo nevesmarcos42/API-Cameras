@@ -17,3 +17,7 @@ build/
 # Miscellaneous
 .DS_Store
 *.pem
+
+# Ignorar dados do Kafka
+kafka/logs/
+kafka/data/
