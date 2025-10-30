@@ -4,7 +4,7 @@ const Camera = require('../models/Camera');
 exports.createCamera = async (req, res) => {
     try {
         const camera = new Camera(req.body);
-        const savedCamera = camera.save();
+        const savedCamera = await camera.save();
         res.status(201).json(savedCamera);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -58,9 +58,10 @@ exports.updateCamera = async (req, res) => {
 // Controlador para deletar uma câmera por ID
 exports.deleteCamera = async (req, res) => {
     try {
-        const deletedCamera = await Camera.findOneAndDelete(req.params.cameraID);
+        const cameraID = req.params.cameraID;
+        const deletedCamera = await Camera.findOneAndDelete({ cameraID: new RegExp(`^${cameraID}$`, "i") });
         if (!deletedCamera) {
-            return res.status(404).json({ error: 'Câmera não encontrada' });
+        return res.status(404).json({ error: 'Câmera não encontrada' });
         }
         res.status(200).json({ message: 'Câmera deletada com sucesso' });
     } catch (error) {
