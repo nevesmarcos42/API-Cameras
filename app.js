@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const cameraRoutes = require('./src/routes/cameraRoutes');
 const { connectProducer, sendMessage } = require('./src/services/kafkaProducer');
 const { connectConsumer } = require('./src/services/kafkaConsumer');
+const eventRoutes = require('./src/routes/eventRoutes');
 
 
 const app = express();
@@ -35,6 +36,7 @@ async function start() {
     });
 
     app.use('/api', cameraRoutes);
+    app.use('/api', eventRoutes);
 
     app.listen(port, () => {
       console.log(`Servidor rodando na porta ${port}`);
