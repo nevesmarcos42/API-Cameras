@@ -62,7 +62,7 @@ services:
       - CLICKHOUSE_USER=myuser
       - CLICKHOUSE_PASSWORD=mypassword
     ports:
-      - "9000:9000"
+      - "9004:9000"
       - "8123:8123"
     volumes:
       - clickhouse-data:/var/lib/clickhouse

@@ -6,6 +6,8 @@ Este projeto é uma API RESTful criada com Node.js, Express e MongoDB (via Mongo
 
 Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir esses eventos no banco de dados analítico ClickHouse, garantindo armazenamento eficiente e consultas rápidas para análise.
 
+Também implementa upload de imagens associadas aos eventos, armazenando-as no MinIO (armazenamento compatível com S3) e fornecendo URLs assinadas para acesso seguro às imagens.
+
 ## Funcionalidades Implementadas
 
 - Configuração modular da conexão MongoDB em `config/db.js`.
@@ -15,11 +17,13 @@ Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir 
   - GET /api/cameras/:cameraID – obter câmera por ID customizado  
   - PUT /api/cameras/:cameraID – atualizar dados da câmera  
   - DELETE /api/cameras/:cameraID – deletar câmera  
-- Tratamento de erros e validações básicas.  
-- Parâmetro de rota unificado `cameraID` para acesso consistente.
+- Upload de imagens via POST /api/event-images/upload, com armazenamento em MinIO.
+- Rota GET /api/event-images/signed-url/:fileName para fornecer URL assinada para acesso a imagens.
 - Integração com Kafka para consumo de eventos de movimento detectados pelas câmeras.
-- Inserção dos eventos consumidos no banco ClickHouse com timestamp formatado para compatibilidade, usando cliente oficial em Node.js.
-- Script de teste para validação da inserção no ClickHouse.
+- Persistência dos eventos consumidos no banco ClickHouse com timestamp formatado para compatibilidade, usando cliente oficial em Node.js.
+- Endpoint GET /api/events com filtros (cameraID, tipo, datas) e paginação para consulta dos eventos.
+- Tratamento de erros e validações básicas.
+- Parâmetro de rota unificado `cameraID` para acesso consistente.
 
 ## Estrutura do Projeto
 
@@ -34,23 +38,28 @@ Adicionalmente, a API foi estendida para consumir eventos via Kafka e persistir 
 ## Como rodar
 
 1. Clone o repositório e instale dependências:  
- - `npm install`
+  - `npm install`
 
 2. Configure o arquivo `.env` com as variáveis necessárias:  
- - `MONGODB_URL=<url_do_mongodb>`  
- - `CLICKHOUSE_URL=<url_do_clickhouse>`  
- - `CLICKHOUSE_USER=<usuario_clickhouse>`  
- - `CLICKHOUSE_PASSWORD=<senha_clickhouse>`  
- - `KAFKA_BROKERS=<lista_brokers_kafka>`  
- - `KAFKA_GROUP_ID=camera-group`
+  - `MONGODB_URL=<url_do_mongodb>`  
+  - `CLICKHOUSE_URL=<url_do_clickhouse>`  
+  - `CLICKHOUSE_USER=<usuario_clickhouse>`  
+  - `CLICKHOUSE_PASSWORD=<senha_clickhouse>`  
+  - `KAFKA_BROKERS=<lista_brokers_kafka>`  
+  - `KAFKA_GROUP_ID=camera-group`  
+  - `MINIO_ENDPOINT=<endpoint_minio>`  
+  - `MINIO_PORT=<porta_minio>`  
+  - `MINIO_ACCESS_KEY=<access_key_minio>`  
+  - `MINIO_SECRET_KEY=<secret_key_minio>`  
+  - `MINIO_BUCKET=camera-events`
 
 3. Inicie o servidor API:  
- - `npm start` ou `nodemon app.js`
+  - `npm start` ou `nodemon app.js`
 
 4. Teste a API com Postman, curl ou similar.
 
 5. Para validar a integração ClickHouse, rode o script de teste:  
- - `node testInsertClickhouse.js`
+  - `node testInsertClickhouse.js`
 
 6. Para rodar o consumidor Kafka e persistir eventos no ClickHouse, execute o serviço consumidor conforme definido no código.
 
@@ -71,6 +80,31 @@ timestamp DateTime
 ORDER BY timestamp;
 
 
+## Documentação dos Endpoints principais
+
+### Câmeras (CRUD)
+
+| Método | Rota                    | Descrição                     |
+|--------|-------------------------|-------------------------------|
+| POST   | /api/cameras            | Criar nova câmera              |
+| GET    | /api/cameras            | Listar todas as câmeras       |
+| GET    | /api/cameras/:cameraID  | Obter câmera por ID           |
+| PUT    | /api/cameras/:cameraID  | Atualizar detalhes da câmera  |
+| DELETE | /api/cameras/:cameraID  | Remover câmera                |
+
+### Eventos
+
+| Método | Rota                  | Descrição                                  |
+|--------|-----------------------|--------------------------------------------|
+| GET    | /api/events            | Consultar eventos com filtros e paginação |
+
+### Imagens de eventos
+
+| Método | Rota                              | Descrição                                           |
+|--------|----------------------------------|-----------------------------------------------------|
+| POST   | /api/event-images/upload          | Upload de imagem associada a evento                 |
+| GET    | /api/event-images/signed-url/:fileName | Obter URL assinada para visualizar imagem         |
+
 ## Próximos Passos
 
 - Implementar autenticação e autorização na API.
@@ -84,5 +118,3 @@ Colaborações e sugestões são bem-vindas!
 Abra issues ou pull requests para participar do desenvolvimento.
 
 ---
-
-Este README será mantido e atualizado conforme o projeto evolui para garantir clareza e facilitar onboarding de novos colaboradores.
