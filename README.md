@@ -365,7 +365,3 @@ Para dúvidas ou problemas:
 - Abra uma issue no repositório
 - Consulte a documentação das dependências
 - Verifique os logs da aplicação em `logs/`
-
-## Versioning
-
-Utilizamos [SemVer](http://semver.org/) para versionamento. Para ver as versões disponíveis, consulte as [tags do repositório](tags).
